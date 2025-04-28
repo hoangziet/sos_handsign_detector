@@ -2,17 +2,25 @@ import os
 import cv2 
 from datetime import datetime
 from config.settings import SAVE_DIR 
+from datetime import datetime
 
 def save_image(image, save_dir = SAVE_DIR):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"screenshot_{timestamp}.png"
+    # take the current time
+    cur_time = datetime.now()
+    ymd_hms = cur_time.strftime("%Y%m%d_%H%M%S")
+    
+    # save the file
+    filename = f"screenshot_{ymd_hms}.png"
     filepath = f"{save_dir}/{filename}"
     cv2.imwrite(filepath, image)
     print(f"[INFO] image saved at {filepath}")
-    return filepath
+    
+    # Re-format date time
+    formated_time = cur_time.strftime("%A, %d %B %Y %H:%M:%S")
+    return filepath, formated_time
 
 def show_SOS(image, text = "SOS detected",):
     cv2.rectangle(image, (0, 0), (image.shape[1], image.shape[0]), (0, 0, 255), 10)

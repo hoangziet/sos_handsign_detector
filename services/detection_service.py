@@ -4,6 +4,7 @@ from detector.sos_logic import SOSdetector
 from utils.image_utils import save_image, show_normal, show_SOS
 from config.settings import DETECTION_CONFIDENCE, TRACKING_CONFIDENCE
 import time  
+from .message_service import send_email
 
 class DetectionService:
     def __init__(self, 
@@ -65,7 +66,12 @@ class DetectionService:
                 signal = self.detector.detect_hand_signal(hand.landmark)
                 if signal == "SOS DETECTION":
                     self.sos_detected_time = time.time()  
-                    save_image(image)  
+                    image_path, formated_time = save_image(image) 
+                    
+                    if self.send_email:
+                        subject = "SOS Detector Alert"
+                        text_content = f"Your camera has detected a SOS handsign case at {formated_time}, please check out this attach image"
+                        send_email(subject, text_content, image_path)
                     show_SOS(image)
                 else: show_normal(image, text="No SOS detected")  # No SOS handsign
             else: show_normal(image, text="No hand detected")  # No hand
